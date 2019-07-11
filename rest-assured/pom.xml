@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.gorillalogic.restassured</groupId>
     <artifactId>RestAssuredKarate</artifactId>
@@ -13,7 +12,7 @@
         <restassured.version>3.3.0</restassured.version>
         <junit.version>4.12</junit.version>
         <junit.dataprovider.version>2.4</junit.dataprovider.version>
-        <jackson.databind.version>2.9.8</jackson.databind.version>
+        <jackson.databind.version>2.9.9.1</jackson.databind.version>
         <wiremock.version>2.23.2</wiremock.version>
     </properties>
     <dependencies>
@@ -41,5 +40,41 @@
             <version>${jackson.databind.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- pom.xml -->
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>3.1.5</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                <properties>
+                    <property>
+                        <name>listener</name>
+                        <value>utils.ExtentReportJUnitListener</value>
+                    </property>
+                </properties>
+
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.0.0-M3</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
