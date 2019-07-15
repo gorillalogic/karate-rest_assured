@@ -22,6 +22,7 @@ Backend Teams are creating API's at a blazing pace today, QA Engineers rely on t
 - Faster results: Teams can have quick feedback of the API in a matter of minutes.
 - Scalability: Faster feedback allows team to deploy faster
 - Visual Interface: GUI to simplify test creation.
+- Higher Coverage: API Tests are more stable than UI tests, and also are more real-life than unit tests, so having a strong API testing suite is highly recommended.
 
 But this approach brings a big problem, test creation becomes a responsibility of QA engineers alone. teams lose the power of having developers creating tests that are close to the source, with all of the knowledge the developer has over the API Endpoint.
 
@@ -29,9 +30,9 @@ We will talk about how to give back power to developers to test their own Endpoi
 
 ## The Candidates
 
-**Rest-assured** is one of the most established API testing tools in the market. It has a powerful Java Based API that leverages **Hamcrest** as the matcher tool and a simple set of methods that allows method chaining and **Pseudo-Gherkin** Syntax.
+ [REST-Assured](http://rest-assured.io/) is one of the most established API testing tools in the market. It has a powerful Java Based API that leverages **Hamcrest** as the matcher tool and a simple set of methods that allows method chaining and **Pseudo-Gherkin** Syntax.
 
-**Karate** in the other hand is a Gherkin Based API testing tool, ideal for quick prototyping and simpler testing that can become as deep as you want, includes a simple quickstart mode, integrated dashboards and other goodies that are dragging attention from the Testing community.
+[Karate](https://intuit.github.io/karate/) in the other hand is a Gherkin Based API testing tool, ideal for quick prototyping and simpler testing that can become as deep as you want, includes a simple quickstart mode, integrated dashboards and other goodies that are dragging attention from the Testing community.
  
 ## Let's get our hands dirty
 
@@ -43,8 +44,29 @@ All your files and folders are presented as a tree in the file explorer. You can
 
 ## The recommendations
 
-You can rename the current file by clicking the file name in the navigation bar or by clicking the **Rename** button in the file explorer.
+As we have seen both testing tools have their strengths and weaknesses, and each one can easily empower your team. I will try to give you some quick notes on each framework:
+
+Use **Karate** when:
+
+- You want a **quickstart** to do API Tests, without major hassle
+- Your team doesn't have **Java background**, or want to work with **Gherkin**
+- You have your Product Owners empowered in code and can write some tests in Gherkin
+- You are comfy enough with the standard reports, and don't want to put time in enhanced reporting
+
+
+Use **REST-Assured** when:
+
+- Your team has a good **Java Expertise**
+- You want to give more responsibility over test creation to developers (Improving the quality assistance methodology)
+- You need/want to use improved matchers offered by **Hamcrest**
+- Your API needs you to know intricate logic that is easier to write in Java
 
 ## The repo
 
-You can delete the current file by clicking the **Remove** button in the file explorer. The file will be moved into the **Trash** folder and automatically deleted after 7 days of inactivity.
+All of the tests, and code examples can be found in this repo:
+
+[Karate vs Rest-Assured](https://github.com/gorillalogic/karate-rest_assured)
+
+The [Karate](https://github.com/gorillalogic/karate-rest_assured/tree/master/karate) Folder contains all of the feature files used during the example, and also the Karate.jar binary file for quickstart.
+
+The [Rest-Assured](https://github.com/gorillalogic/karate-rest_assured/tree/master/rest-assured) folder contains a quick Maven project to start testing using Rest-Assured and also all of the examples we saw during this article.
