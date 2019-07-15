@@ -1,5 +1,5 @@
 # Welcome to Karate vs Rest-Assured!
-
+![Image](images/main.png)
 Postman is dead, Long live [Insert your pick here]
 
 
