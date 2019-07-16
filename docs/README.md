@@ -1,6 +1,7 @@
 # Welcome to Karate vs Rest-Assured!
 ![Image](images/main.png)
-Postman is dead, Long live [Insert your pick here]
+
+### `Postman is dead, Long live [Insert your pick here]`
 
 
 ## Motivation
@@ -36,11 +37,221 @@ We will talk about how to give back power to developers to test their own Endpoi
  
 ## Let's get our hands dirty
 
-The file explorer is accessible using the button in left corner of the navigation bar. You can create a new file by clicking the **New file** button in the file explorer. You can also create folders by clicking the **New folder** button.
+### Installation
+For starters both projects need to have the `JVM` and `Maven` installed.
+
+---
+#### Karate
+`Karate` is pretty straightforward, just download the [Karate-x.x.x.jar](https://github.com/intuit/karate/tree/master/karate-netty#standalone-jar) and you are done.
+
+---
+#### REST-Assured
+`Rest-Assured` works pretty well with maven, so you can start a new project using any maven archetype and adding the following dependencies:
+
+```xml
+<dependencies>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${restassured.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.databind.version}</version>
+            <scope>test</scope>
+        </dependency>
+```
+
+A full `pom.xml` file is located into the `rest-assured` folder
+
+Execute `mvn compile` and all of the dependencies will be downloaded
+
+### The Tests
+We will have both frameworks verify the same application, using the same tests.
+
+Our `Application Under Test` will be [JSONPlaceHolder](https://jsonplaceholder.typicode.com/todos/1), which offers a simple REST API for testing.
+  
+  - The API returns a hardcoded list of TODO's
+  - We will verify the first TODO and the most common operations available:
+- - Equality
+- - Contains and Not Contains
+
+---
+
+`Karate - Equality`
+```gherkin
+Feature: TODO API Verificator
+
+Background:
+    * url 'https://jsonplaceholder.typicode.com/todos/1'
+
+Scenario: Verify First Todo is equals to "delectus aut autem"
+    Given request
+    When method get
+    Then status 200   
+    And match response == { userId: 1, id: 1, title: "delectus aut autem", completed: false } # Karate offers full JSON Comparison out of the box
+
+ Scenario: Verify First Todo is equals to the sum of its parts
+    Given request
+    When method get
+    Then status 200    
+    And match response.userId == 1
+    And match response.id == 1
+    And match response.title == "delectus aut autem"
+    And match response.completed == false # Also offers the standard comparison by element
+   
+```
+
+`REST_assured - Equality`
+```java
+private String url = "https://jsonplaceholder.typicode.com/todos/1";
+    @Test
+    public void verifyFirstTodoIsEqualToTheSumOfItsParts() {
+        given()
+        .when()
+            .get(url). // Yay, Gherkin
+        then()
+            .assertThat().body("userId", equalTo(1))
+            .and().statusCode(200)
+            .and().body("id", equalTo(1))
+            .and().body("title", equalTo("delectus aut autem"))
+            .and().body("completed", equalTo(false))
+            ;
+    }
+    // Unfortunately, there is no built-in way to compare a whole JSON in Rest-Assured, yet the Gherkin Syntax included allows for a powerful matching logic
+```
+
+---
+`Karate - Contains`
+```gherkin
+Feature: TODO API Verificator
+
+Background:
+    * url 'https://jsonplaceholder.typicode.com/todos/1'
+
+Scenario: Verify First Todo title contains "delectus"
+    Given request
+    When method get
+    Then status 200    
+    And match response contains { title: "#regex ^(\\w+[delectus]).+"} # Supports regex out of the box
+
+```
+
+`REST_assured - Contains`
+```java
+ private String url = "https://jsonplaceholder.typicode.com/todos/1";
+    @Test
+    public void verifyTitleContainsDelectus() {
+        given()
+        .when()
+            .get(url).
+        then()
+            .assertThat().statusCode(200)
+            .and().body("title", containsString("delectus")) // Hamcrest Matchers, no need for regex
+            ;
+    }
+```
+  
+  ---
+
+`Karate - Not contains value`
+```gherkin
+Feature: TODO API Verificator
+
+Background:
+    * url 'https://jsonplaceholder.typicode.com/todos/1'
+
+Scenario: Verify First Todo title field does not contain lorem
+    Given request
+    When method get
+    Then status 200    
+    And match response contains { title: "#regex ^((?!lorem).)*$"}  # Regex to verify value is not contained
+
+```
+
+`REST_assured - Not contains value`
+```java
+ private String url = "https://jsonplaceholder.typicode.com/todos/1";
+    @Test
+    public void verifyTitleNotContainsLoremIpsum() {
+        given()
+        .when()
+            .get(url).
+        then()
+            .assertThat().statusCode(200)
+            .and().body("title", not(containsString("lorem ipsum"))) // Use the compound matcher not()
+            ;
+    }
+```
+
+  ---
+
+`What if we want to verify that an element is not part of the repsonse`
+
+`Karate - Not contains ELEMENT`
+```gherkin
+Feature: TODO API Verificator
+
+Background:
+    * url 'https://jsonplaceholder.typicode.com/todos/1'
+
+Scenario: Verify First Todo does not contains author field
+    Given request
+    When method get
+    Then status 200    
+    And match response.author == '#notpresent' 
+    
+    # Built-In Mechanism to verify for element existente
+```
+
+`REST_assured - Not contains ELEMENT`
+```java
+ private String url = "https://jsonplaceholder.typicode.com/todos/1";
+    @Test
+    public void verifyResponseDoesNotContainAuthor() {
+		given()
+        .when()
+            .get(url).
+        then()
+            .assertThat().statusCode(200)
+            .and().body( "any { it.key == 'author'}", is(false)) // Use JSONPath to verify element existence
+            ;
+    }
+```
 
 ## The results
 
-All your files and folders are presented as a tree in the file explorer. You can switch from one to another by clicking a file in the tree.
+---
+To execute `Karate's` feature files:
+- Place all Feature Files in a directory called `features`
+- e.g `features\TODO-verifyNotContains.feature`
+- then execute: `java -jar Karate-x.x.x.jar features\TODO-verifyNotContains.feature`
+
+Karate has a built in reporting tool, powered by Cucumber that gives you the result of the tests
+
+![Image](images/karate-report.png)
+
+---
+To execute `Rest-Assured` tests:
+- `Rest-Assured` leverages JUnit or TestNG as test runners.
+- Place all the Test files into the `src\test\java` folder
+- open a terminal in the root folder and execute `mvn clean compile test`
+- By default Rest-Asssured does not include a Nice reporting tool. yet:
+
+
+![Image](images/rest-extent-report.png)
+
+We can use the powerful `Extent Framework` to have beautiful reports.
+
+We will talk about that in our `next article`.
 
 ## The recommendations
 
